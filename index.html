@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-...">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-..."></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-..."></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-..."></script>
+    <script src= "/socket.io/socket.io.js"></script>
+</head>
+<body>
+<div class="container">
+    <br>
+    <div class="jumbotron">
+        <h1 class="display-4">Send Message</h1>
+        <br>
+        <input id="name" class="form-control" placeholder="Name"> <!-- Added missing class attribute -->
+        <br>
+        <textarea id="message" class="form-control" placeholder="Message"></textarea> <!-- Added missing class attribute -->
+        <br>
+        <button id="send" class="btn btn-success">Send</button>
+    </div>
+    <div id="messages">
+    </div>
+</div>
+<script>
+   $(document).ready(() => { // Ensure this is run after the document is loaded
+    $("#send").click(() => {
+        var message = {
+            name: $("#name").val(), // Fixed jQuery selector and syntax
+            message: $("#message").val() // Fixed jQuery selector and syntax
+        };
+        postMessages(message); // Corrected function name
+    });
+    getMessages();
+});
+
+function addMessages(message) {
+    $("#messages").append(`<h4> ${message.name} </h4><p> ${message.message} </p>`);
+}
+
+function getMessages() {
+    $.get('http://localhost:3000/messages', (data) => {
+        data.forEach(addMessages);
+    });
+}
+
+function postMessages(message) {
+    $.post('http://localhost:3000/messages', message, (response) => {
+        console.log(response); // Handle the response from the server
+        getMessages(); // Refresh messages after posting
+    }).fail((jqXHR, textStatus, errorThrown) => {
+        console.error('Error posting message:', textStatus, errorThrown);
+    });
+}
+</script>
+</body>
+</html>
